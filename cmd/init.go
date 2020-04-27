@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	delivery "github.com/codingXiang/gecko/module/delivery/cmd"
 	"github.com/codingXiang/gecko/module/model/cmd"
 	repo "github.com/codingXiang/gecko/module/repository/cmd"
 	svc "github.com/codingXiang/gecko/module/service/cmd"
@@ -16,5 +17,5 @@ var General = &cobra.Command{
 
 func init() {
 	Root.AddCommand(General)
-	General.AddCommand(model.Root, repo.Root, svc.Root)
+	General.AddCommand(model.Root, repo.Root, svc.Root, delivery.Root)
 }

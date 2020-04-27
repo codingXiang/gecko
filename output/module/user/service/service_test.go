@@ -40,7 +40,7 @@ func (s *Suite) SetupSuite() {
 	//	repo.EXPECT().CreateXXX(testData).Return(testData, nil)
 	//}
 	// 初始化 demoService
-	s.service = service.New{{Module}}Service(repo)
+	s.service = service.NewUserService(repo)
 }
 
 //TestStart 為測試程式進入點
@@ -63,28 +63,28 @@ func TestStart(t *testing.T) {
 	//	require.IsType(s.T(), testData, data)
 	//}
 //}
-//TestGetUser 用於測試 Service 中的 GetUser
-func (s *Suite) TestGetUser() {
+//TestGetUser{{ .method.extension }} 用於測試 Service 中的 GetUser{{ .method.extension }}
+func (s *Suite) TestGetUser{{ .method.extension }}() {
 	panic("implement me")
 }
-//TestGetUserList 用於測試 Service 中的 GetUserList
-func (s *Suite) TestGetUserList() {
+//TestGetUser{{ .method.extension }} 用於測試 Service 中的 GetUser{{ .method.extension }}
+func (s *Suite) TestGetUser{{ .method.extension }}() {
 	panic("implement me")
 }
-//TestCreateUser 用於測試 Service 中的 CreateUser
-func (s *Suite) TestCreateUser() {
+//TestCreateUser{{ .method.extension }} 用於測試 Service 中的 CreateUser{{ .method.extension }}
+func (s *Suite) TestCreateUser{{ .method.extension }}() {
 	panic("implement me")
 }
-//TestUpdateUser 用於測試 Service 中的 UpdateUser
-func (s *Suite) TestUpdateUser() {
+//TestUpdateUser{{ .method.extension }} 用於測試 Service 中的 UpdateUser{{ .method.extension }}
+func (s *Suite) TestUpdateUser{{ .method.extension }}() {
 	panic("implement me")
 }
-//TestModifyUser 用於測試 Service 中的 ModifyUser
-func (s *Suite) TestModifyUser() {
+//TestModifyUser{{ .method.extension }} 用於測試 Service 中的 ModifyUser{{ .method.extension }}
+func (s *Suite) TestModifyUser{{ .method.extension }}() {
 	panic("implement me")
 }
-//TestDeleteUser 用於測試 Service 中的 DeleteUser
-func (s *Suite) TestDeleteUser() {
+//TestDeleteUser{{ .method.extension }} 用於測試 Service 中的 DeleteUser{{ .method.extension }}
+func (s *Suite) TestDeleteUser{{ .method.extension }}() {
 	panic("implement me")
 }
 

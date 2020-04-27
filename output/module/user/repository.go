@@ -12,7 +12,7 @@ type Repository interface {
     以下宣告 Repository 方法
 */
     GetUser(data model.UserInterface) (model.User ,error)
-    GetUserList(data model.UserInterface) (model.User ,error)
+    GetUser(data model.UserInterface) (model.User ,error)
     CreateUser(data model.UserInterface) (model.User ,error)
     UpdateUser(data model.UserInterface) (model.User ,error)
     ModifyUser(model model.UserInterface, data map[string]interface{}) (model.User ,error)
