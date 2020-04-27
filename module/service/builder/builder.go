@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"github.com/codingXiang/gecko/module/builder"
 	"github.com/codingXiang/gecko/parser"
-	"github.com/codingXiang/gecko/template/SERVICE"
 	"github.com/codingXiang/gecko/template/base"
 	"github.com/codingXiang/gecko/template/repository"
+	"github.com/codingXiang/gecko/template/service"
 	"io/ioutil"
 	"log"
 	"os"
@@ -75,26 +75,39 @@ func (r *ServiceBuilder) General() (_interface []byte, _implement []byte, _test 
 	for it := range r.Source.GetStruct() {
 		name := it.GetName().Name
 		for _, crud := range repository.CRUD {
+			//共用參數
+			data := map[string]string{
+				"method_variable":    "result, err",
+				"module":             name,
+				"method_extension":   "",
+				"method_verb":        crud,
+				"method_param":       "data " + packageName + "." + name + "Interface",
+				"method_param_value": "data",
+				"method_return_type": "*" + packageName + "." + name + ", error",
+				"method_return":      "result, err",
+			}
+			switch crud {
+			case "GetList":
+				data["method_verb"] = "Get"
+				data["method_extension"] = "List"
+				data["method_param"] = "data map[string]interface{}"
+				data["method_return_type"] = "[]*" + packageName + "." + name + ", error"
+				break;
+			case "Modify":
+				data["method_param"] = "data " + packageName + "." + name + "Interface, column map[string]interface{}"
+				data["method_param_value"] = "data, column"
+				break;
+			case "Delete":
+				data["method_variable"] = "err"
+				data["method_return_type"] = "error"
+				data["method_return"] = "err"
+				break;
+			}
 			//interface
 			{
 				itm := service.INTERFACE_ABSTRACT_METHOD
-				if crud == "GetList" {
-					itm = bytes.ReplaceAll(itm, []byte("{{verb}}"), []byte("Get"))
-					itm = bytes.ReplaceAll(itm, []byte("{{model}}"), []byte(name+"List"))
-				} else {
-					itm = bytes.ReplaceAll(itm, []byte("{{verb}}"), []byte(crud))
-					itm = bytes.ReplaceAll(itm, []byte("{{model}}"), []byte(name))
-				}
-				if crud == "Modify" {
-					itm = bytes.ReplaceAll(itm, []byte("{{param}}"), []byte("model "+packageName+"."+name+"Interface, data map[string]interface{}"))
-				} else {
-					itm = bytes.ReplaceAll(itm, []byte("{{param}}"), []byte("data "+packageName+"."+name+"Interface"))
-				}
-				if crud == "Delete" {
-					itm = bytes.ReplaceAll(itm, []byte("{{type}}"), []byte("error"))
-				} else {
-					itm = bytes.ReplaceAll(itm, []byte("{{type}}"), []byte(packageName+"."+name+" ,error"))
-				}
+				itm = r.Info.ReplaceTemplateMethod(itm, data)
+
 				itm = append(itm, repository.SUBSTITUTION...)
 				_interface_abstract_method = append(_interface_abstract_method, itm...)
 			}
@@ -102,89 +115,27 @@ func (r *ServiceBuilder) General() (_interface []byte, _implement []byte, _test 
 			{
 				itm := service.INTERFACE_METHOD
 				//取代方法的 module 名稱
-				itm = bytes.ReplaceAll(itm, []byte("{{module}}"), []byte(name))
-				itm = bytes.ReplaceAll(itm, []byte("{{variable}}"), repository.INTERFACE_METHOD_VARIABLE)
-				itm = bytes.ReplaceAll(itm, []byte("{{action}}"), repository.INTERFACE_METHOD_ACTION)
+				itm = bytes.ReplaceAll(itm, []byte("{{ .module }}"), []byte(name))
+				//itm = bytes.ReplaceAll(itm, []byte("{{ .method.variable }}"), service.INTERFACE_METHOD_VARIABLE)
+				itm = bytes.ReplaceAll(itm, []byte("{{ .method.action }}"), service.INTERFACE_METHOD_ACTION)
+				// method 取代參數
 
-				switch crud {
-				case "GetList":
-					itm = bytes.ReplaceAll(itm, []byte("{{variable}}"), []byte("make([]*"+packageName+"."+name+", 0)"))
-					itm = bytes.ReplaceAll(itm, []byte("{{verb}}"), []byte("Get"))
-					itm = bytes.ReplaceAll(itm, []byte("{{model}}"), []byte(name+"List"))
-					itm = bytes.ReplaceAll(itm, []byte("{{param}}"), []byte("data map[string]interface{}"))
-					itm = bytes.ReplaceAll(itm, []byte("{{type}}"), []byte("[]*"+packageName+"."+name+", error"))
-					itm = bytes.ReplaceAll(itm, []byte("{{action}}"), []byte("Find(&result, data)"))
-					itm = bytes.ReplaceAll(itm, []byte("{{return}}"), []byte("return in, err"))
-
-					break;
-				case "Get":
-					itm = bytes.ReplaceAll(itm, []byte("{{variable}}"), []byte("data.(*"+packageName+"."+name+")"))
-					itm = bytes.ReplaceAll(itm, []byte("{{verb}}"), []byte(crud))
-					itm = bytes.ReplaceAll(itm, []byte("{{model}}"), []byte(name))
-					itm = bytes.ReplaceAll(itm, []byte("{{param}}"), []byte("data "+packageName+"."+name+"Interface"))
-					itm = bytes.ReplaceAll(itm, []byte("{{type}}"), []byte("*"+packageName+"."+name+", error"))
-					itm = bytes.ReplaceAll(itm, []byte("{{action}}"), []byte("First(&in)"))
-					itm = bytes.ReplaceAll(itm, []byte("{{return}}"), []byte("return in, err"))
-					break;
-				case "Create":
-					itm = bytes.ReplaceAll(itm, []byte("{{variable}}"), []byte("data.(*"+packageName+"."+name+")"))
-
-					itm = bytes.ReplaceAll(itm, []byte("{{verb}}"), []byte(crud))
-					itm = bytes.ReplaceAll(itm, []byte("{{model}}"), []byte(name))
-					itm = bytes.ReplaceAll(itm, []byte("{{param}}"), []byte("data "+packageName+"."+name+"Interface"))
-					itm = bytes.ReplaceAll(itm, []byte("{{type}}"), []byte("*"+packageName+"."+name+", error"))
-					itm = bytes.ReplaceAll(itm, []byte("{{action}}"), []byte("Create(&in)"))
-					itm = bytes.ReplaceAll(itm, []byte("{{return}}"), []byte("return in, err"))
-
-					break;
-				case "Modify":
-					itm = bytes.ReplaceAll(itm, []byte("{{variable}}"), []byte("data.(*"+packageName+"."+name+")"))
-
-					itm = bytes.ReplaceAll(itm, []byte("{{verb}}"), []byte(crud))
-					itm = bytes.ReplaceAll(itm, []byte("{{model}}"), []byte(name))
-					itm = bytes.ReplaceAll(itm, []byte("{{param}}"), []byte("data "+packageName+"."+name+"Interface, column map[string]interface{}"))
-					itm = bytes.ReplaceAll(itm, []byte("{{type}}"), []byte("*"+packageName+"."+name+", error"))
-					itm = bytes.ReplaceAll(itm, []byte("{{action}}"), []byte("Model(&in).Updates(column)"))
-					itm = bytes.ReplaceAll(itm, []byte("{{return}}"), []byte("return in, err"))
-
-					break;
-				case "Update":
-					itm = bytes.ReplaceAll(itm, []byte("{{variable}}"), []byte("data.(*"+packageName+"."+name+")"))
-
-					itm = bytes.ReplaceAll(itm, []byte("{{verb}}"), []byte(crud))
-					itm = bytes.ReplaceAll(itm, []byte("{{model}}"), []byte(name))
-					itm = bytes.ReplaceAll(itm, []byte("{{param}}"), []byte("data "+packageName+"."+name+"Interface"))
-					itm = bytes.ReplaceAll(itm, []byte("{{type}}"), []byte("*"+packageName+"."+name+", error"))
-					itm = bytes.ReplaceAll(itm, []byte("{{action}}"), []byte("Update(&in)"))
-					itm = bytes.ReplaceAll(itm, []byte("{{return}}"), []byte("return in, err"))
-
-					break;
-				case "Delete":
-					itm = bytes.ReplaceAll(itm, []byte("{{variable}}"), []byte("data.(*"+packageName+"."+name+")"))
-
-					itm = bytes.ReplaceAll(itm, []byte("{{verb}}"), []byte(crud))
-					itm = bytes.ReplaceAll(itm, []byte("{{model}}"), []byte(name))
-					itm = bytes.ReplaceAll(itm, []byte("{{param}}"), []byte("data "+packageName+"."+name+"Interface"))
-					itm = bytes.ReplaceAll(itm, []byte("{{type}}"), []byte("error"))
-					itm = bytes.ReplaceAll(itm, []byte("{{action}}"), []byte("Delete(&in)"))
-					itm = bytes.ReplaceAll(itm, []byte("{{return}}"), []byte("return err"))
-
-					break;
-				}
-
+				itm = r.Info.ReplaceImplementMethod(itm, data)
+				itm = bytes.ReplaceAll(itm, []byte("{{ .package }}"), []byte(r.Info.GetPackageName()))
 				itm = append(itm, repository.SUBSTITUTION...)
 				_interface_method = append(_interface_method, itm...)
 			}
 			//test
 			{
 				itm := service.INTERFACE_TEST
+				itm = bytes.ReplaceAll(itm, []byte("{{ .module }}"), []byte(name))
 				//取代方法的 module 名稱
 				if crud == "GetList" {
-					itm = bytes.ReplaceAll(itm, []byte("{{verb}}"), []byte("Get"))
-					itm = bytes.ReplaceAll(itm, []byte("{{model}}"), []byte(name+"List"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.verb }}"), []byte("Get"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .module.extension }}"), []byte("List"))
 				} else {
-					itm = bytes.ReplaceAll(itm, []byte("{{verb}}"), []byte(crud))
-					itm = bytes.ReplaceAll(itm, []byte("{{model}}"), []byte(name))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.verb }}"), []byte(crud))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .module.extension }}"), []byte(""))
 				}
 
 				itm = append(itm, repository.SUBSTITUTION...)

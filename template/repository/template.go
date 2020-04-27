@@ -1,21 +1,21 @@
 package repository
 
-var (
-	Get     = []byte(`Get{{method}}(data model.{{model}}Interface) (*model.{{model}}, error)`)
-	GetList = []byte(`Get{{method}}List(data map[string]interface{}) ([]*model.{{model}}, error)`)
-	Create  = []byte(`Create{{method}}(data model.{{model}}Interface) (*model.{{model}}, error)`)
-	Update  = []byte(`Update{{method}}(data model.{{model}}Interface) (*model.{{model}}, error)`)
-	Modify  = []byte(`Modify{{method}}(data model.{{model}}Interface, data map[string]interface{}) (*model.{{model}}, error)`)
-	Delete  = []byte(`Delete{{method}}(data model.{{model}}Interface) error`)
-)
+//var (
+//	Get     = []byte(`Get{{method}}(data model.{{ .module }}Interface) (*model.{{ .module }}, error)`)
+//	GetList = []byte(`Get{{method}}List(data map[string]interface{}) ([]*model.{{ .module }}, error)`)
+//	Create  = []byte(`Create{{method}}(data model.{{ .module }}Interface) (*model.{{ .module }}, error)`)
+//	Update  = []byte(`Update{{method}}(data model.{{ .module }}Interface) (*model.{{ .module }}, error)`)
+//	Modify  = []byte(`Modify{{method}}(data model.{{ .module }}Interface, data map[string]interface{}) (*model.{{ .module }}, error)`)
+//	Delete  = []byte(`Delete{{method}}(data model.{{ .module }}Interface) error`)
+//)
 
 var (
 	INTERFACE = []byte(`
 /*
 Auto Create By Moduler
-{{package}} 模組的 Repository Interface
+{{ .package }} 模組的 Repository Interface
 */
-package {{package}}
+package {{ .package }}
 
 //Repository 用於與資料庫進行存取的封裝方法
 //go:generate mockgen -destination mock/mock_repository.go -package mock -source repository.go
@@ -23,13 +23,13 @@ type Repository interface {
 /*
     以下宣告 Repository 方法
 */
-{{implement}}
+{{ .implement }}
 }
 `)
 	IMPLEMENT = []byte(`
 /*
 Auto Create By Moduler
-{{module}} 模組的 Repository implement
+{{ .module }} 模組的 Repository implement
 */
 package repository
 
@@ -38,13 +38,13 @@ import (
 )
 
 //Repository 實例
-type {{module}}Repository struct {
+type {{ .module }}Repository struct {
 	orm *gorm.DB
 }
 
 //建立
-func New{{module}}Repository(orm *gorm.DB) {{package}}.Repository {
-	return &{{module}}Repository{
+func New{{ .module }}Repository(orm *gorm.DB) {{ .package }}.Repository {
+	return &{{ .module }}Repository{
 		orm: orm,
 	}
 }
@@ -52,11 +52,11 @@ func New{{module}}Repository(orm *gorm.DB) {{package}}.Repository {
 /*
     以下實作 Repository 方法
 */
-{{implement}}
+{{ .implement }}
 
 `)
 	TEST = []byte(`
-//Package repository_test 用於測試 {{module}} 模組的 Repository
+//Package repository_test 用於測試 {{ .module }} 模組的 Repository
 package repository_test
 
 import (
@@ -73,7 +73,7 @@ type Suite struct {
 	suite.Suite
 	DB         *gorm.DB
 	mock       sqlmock.Sqlmock
-	repository {{package}}.Repository
+	repository {{ .package }}.Repository
 }
 
 //初始化 Suite
@@ -94,7 +94,7 @@ func (s *Suite) SetupSuite() {
 	// 設定 log 模式
 	s.DB.LogMode(false)
 	// 設定要測試的 repository
-	s.repository = repository.New{{module}}Repository(s.DB)
+	s.repository = repository.New{{ .module }}Repository(s.DB)
 }
 
 //AfterTest 用於測試完畢之後的檢查
@@ -110,29 +110,29 @@ func TestStart(t *testing.T) {
 /*
     以下撰寫測試用例
 */
-{{implement}}
+{{ .implement }}
 `)
 	SUBSTITUTION = []byte(`
 `)
 )
 
 var (
-	INTERFACE_ABSTRACT_METHOD = []byte(`    {{verb}}{{model}}({{param}}) ({{type}})`)
+	INTERFACE_ABSTRACT_METHOD = []byte(`    {{ .method.verb }}{{ .module }}({{ .method.param }}) ({{ .method.return.type }})`)
 	INTERFACE_METHOD          = []byte(`//此為自動產生，建議不要進行更動
-func (g *{{module}}Repository) {{verb}}{{model}}({{param}}) ({{type}}) {
-	{{variable}}
-	{{action}}
-	{{return}}
+func (g *{{ .module }}Repository) {{ .method.verb }}{{ .module }}{{ .module.extension }}({{ .method.param }}) ({{ .method.return.type }}) {
+	{{ .module.variable }}
+	{{ .method.action }}
+	{{ .method.return }}
 }`)
 	INTERFACE_METHOD_VARIABLE = []byte(`var (
 		err error
-		in  = {{variable}}
+		in  = {{ .module.variable }}
 	)`)
-	INTERFACE_METHOD_ACTION = []byte(`err = g.orm.{{action}}.Error`)
+	INTERFACE_METHOD_ACTION = []byte(`err = g.orm.{{ .method.action }}.Error`)
 	CRUD = []string{"Get", "GetList", "Create", "Update", "Modify", "Delete"}
 
-	INTERFACE_TEST = []byte(`//Test{{verb}}{{model}} 用於測試 Repository 中的 {{verb}}{{model}}
-func (s *Suite) Test{{verb}}{{model}}() {
+	INTERFACE_TEST = []byte(`//Test{{ .method.verb }}{{ .module }}{{ .module.extension }} 用於測試 Repository 中的 {{ .method.verb }}{{ .module }}{{ .module.extension }}
+func (s *Suite) Test{{ .method.verb }}{{ .module }}{{ .module.extension }}() {
 	panic("implement me")
 }`)
 )

@@ -78,22 +78,24 @@ func (r *RepositoryBuilder) General() (_interface []byte, _implement []byte, _te
 			//interface
 			{
 				itm := repository.INTERFACE_ABSTRACT_METHOD
+				itm = bytes.ReplaceAll(itm, []byte("{{ .module }}"), []byte(name))
+
 				if crud == "GetList" {
-					itm = bytes.ReplaceAll(itm, []byte("{{verb}}"), []byte("Get"))
-					itm = bytes.ReplaceAll(itm, []byte("{{model}}"), []byte(name+"List"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.verb }}"), []byte("Get"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .module.extension }}"), []byte("List"))
 				} else {
-					itm = bytes.ReplaceAll(itm, []byte("{{verb}}"), []byte(crud))
-					itm = bytes.ReplaceAll(itm, []byte("{{model}}"), []byte(name))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.verb }}"), []byte(crud))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .module.extension }}"), []byte(""))
 				}
 				if crud == "Modify" {
-					itm = bytes.ReplaceAll(itm, []byte("{{param}}"), []byte("model "+packageName+"."+name+"Interface, data map[string]interface{}"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.param }}"), []byte("model "+packageName+"."+name+"Interface, data map[string]interface{}"))
 				} else {
-					itm = bytes.ReplaceAll(itm, []byte("{{param}}"), []byte("data "+packageName+"."+name+"Interface"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.param }}"), []byte("data "+packageName+"."+name+"Interface"))
 				}
 				if crud == "Delete" {
-					itm = bytes.ReplaceAll(itm, []byte("{{type}}"), []byte("error"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.return.type }}"), []byte("error"))
 				} else {
-					itm = bytes.ReplaceAll(itm, []byte("{{type}}"), []byte(packageName+"."+name+" ,error"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.return.type }}"), []byte(packageName+"."+name+" ,error"))
 				}
 				itm = append(itm, repository.SUBSTITUTION...)
 				_interface_abstract_method = append(_interface_abstract_method, itm...)
@@ -102,72 +104,76 @@ func (r *RepositoryBuilder) General() (_interface []byte, _implement []byte, _te
 			{
 				itm := repository.INTERFACE_METHOD
 				//取代方法的 module 名稱
-				itm = bytes.ReplaceAll(itm, []byte("{{module}}"), []byte(name))
-				itm = bytes.ReplaceAll(itm, []byte("{{variable}}"), repository.INTERFACE_METHOD_VARIABLE)
-				itm = bytes.ReplaceAll(itm, []byte("{{action}}"), repository.INTERFACE_METHOD_ACTION)
+				itm = bytes.ReplaceAll(itm, []byte("{{ .module }}"), []byte(name))
+				itm = bytes.ReplaceAll(itm, []byte("{{ .module.variable }}"), repository.INTERFACE_METHOD_VARIABLE)
+				itm = bytes.ReplaceAll(itm, []byte("{{ .method.action }}"), repository.INTERFACE_METHOD_ACTION)
 
 				switch crud {
 				case "GetList":
-					itm = bytes.ReplaceAll(itm, []byte("{{variable}}"), []byte("make([]*"+packageName+"."+name+", 0)"))
-					itm = bytes.ReplaceAll(itm, []byte("{{verb}}"), []byte("Get"))
-					itm = bytes.ReplaceAll(itm, []byte("{{model}}"), []byte(name+"List"))
-					itm = bytes.ReplaceAll(itm, []byte("{{param}}"), []byte("data map[string]interface{}"))
-					itm = bytes.ReplaceAll(itm, []byte("{{type}}"), []byte("[]*"+packageName+"."+name+", error"))
-					itm = bytes.ReplaceAll(itm, []byte("{{action}}"), []byte("Find(&result, data)"))
-					itm = bytes.ReplaceAll(itm, []byte("{{return}}"), []byte("return in, err"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .module.variable }}"), []byte("make([]*"+packageName+"."+name+", 0)"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.verb }}"), []byte("Get"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .module }}"), []byte(name))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .module.extension }}"), []byte("List"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.param }}"), []byte("data map[string]interface{}"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.return.type }}"), []byte("[]*"+packageName+"."+name+", error"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.action }}"), []byte("Find(&result, data)"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.return }}"), []byte("return in, err"))
 
 					break;
 				case "Get":
-					itm = bytes.ReplaceAll(itm, []byte("{{variable}}"), []byte("data.(*"+packageName+"."+name+")"))
-					itm = bytes.ReplaceAll(itm, []byte("{{verb}}"), []byte(crud))
-					itm = bytes.ReplaceAll(itm, []byte("{{model}}"), []byte(name))
-					itm = bytes.ReplaceAll(itm, []byte("{{param}}"), []byte("data "+packageName+"."+name+"Interface"))
-					itm = bytes.ReplaceAll(itm, []byte("{{type}}"), []byte("*"+packageName+"."+name+", error"))
-					itm = bytes.ReplaceAll(itm, []byte("{{action}}"), []byte("First(&in)"))
-					itm = bytes.ReplaceAll(itm, []byte("{{return}}"), []byte("return in, err"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .module.variable }}"), []byte("data.(*"+packageName+"."+name+")"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.verb }}"), []byte(crud))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .module }}"), []byte(name))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .module.extension }}"), []byte(""))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.param }}"), []byte("data "+packageName+"."+name+"Interface"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.return.type }}"), []byte("*"+packageName+"."+name+", error"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.action }}"), []byte("First(&in)"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.return }}"), []byte("return in, err"))
 					break;
 				case "Create":
-					itm = bytes.ReplaceAll(itm, []byte("{{variable}}"), []byte("data.(*"+packageName+"."+name+")"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .module.variable }}"), []byte("data.(*"+packageName+"."+name+")"))
 
-					itm = bytes.ReplaceAll(itm, []byte("{{verb}}"), []byte(crud))
-					itm = bytes.ReplaceAll(itm, []byte("{{model}}"), []byte(name))
-					itm = bytes.ReplaceAll(itm, []byte("{{param}}"), []byte("data "+packageName+"."+name+"Interface"))
-					itm = bytes.ReplaceAll(itm, []byte("{{type}}"), []byte("*"+packageName+"."+name+", error"))
-					itm = bytes.ReplaceAll(itm, []byte("{{action}}"), []byte("Create(&in)"))
-					itm = bytes.ReplaceAll(itm, []byte("{{return}}"), []byte("return in, err"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.verb }}"), []byte(crud))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .module }}"), []byte(name))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .module.extension }}"), []byte(""))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.param }}"), []byte("data "+packageName+"."+name+"Interface"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.return.type }}"), []byte("*"+packageName+"."+name+", error"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.action }}"), []byte("Create(&in)"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.return }}"), []byte("return in, err"))
 
 					break;
 				case "Modify":
-					itm = bytes.ReplaceAll(itm, []byte("{{variable}}"), []byte("data.(*"+packageName+"."+name+")"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .module.variable }}"), []byte("data.(*"+packageName+"."+name+")"))
 
-					itm = bytes.ReplaceAll(itm, []byte("{{verb}}"), []byte(crud))
-					itm = bytes.ReplaceAll(itm, []byte("{{model}}"), []byte(name))
-					itm = bytes.ReplaceAll(itm, []byte("{{param}}"), []byte("data "+packageName+"."+name+"Interface, column map[string]interface{}"))
-					itm = bytes.ReplaceAll(itm, []byte("{{type}}"), []byte("*"+packageName+"."+name+", error"))
-					itm = bytes.ReplaceAll(itm, []byte("{{action}}"), []byte("Model(&in).Updates(column)"))
-					itm = bytes.ReplaceAll(itm, []byte("{{return}}"), []byte("return in, err"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.verb }}"), []byte(crud))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .module }}"), []byte(name))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .module.extension }}"), []byte(""))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.param }}"), []byte("data "+packageName+"."+name+"Interface, column map[string]interface{}"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.return.type }}"), []byte("*"+packageName+"."+name+", error"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.action }}"), []byte("Model(&in).Updates(column)"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.return }}"), []byte("return in, err"))
 
 					break;
 				case "Update":
-					itm = bytes.ReplaceAll(itm, []byte("{{variable}}"), []byte("data.(*"+packageName+"."+name+")"))
-
-					itm = bytes.ReplaceAll(itm, []byte("{{verb}}"), []byte(crud))
-					itm = bytes.ReplaceAll(itm, []byte("{{model}}"), []byte(name))
-					itm = bytes.ReplaceAll(itm, []byte("{{param}}"), []byte("data "+packageName+"."+name+"Interface"))
-					itm = bytes.ReplaceAll(itm, []byte("{{type}}"), []byte("*"+packageName+"."+name+", error"))
-					itm = bytes.ReplaceAll(itm, []byte("{{action}}"), []byte("Update(&in)"))
-					itm = bytes.ReplaceAll(itm, []byte("{{return}}"), []byte("return in, err"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .module.variable }}"), []byte("data.(*"+packageName+"."+name+")"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.verb }}"), []byte(crud))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .module }}"), []byte(name))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .module.extension }}"), []byte(""))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.param }}"), []byte("data "+packageName+"."+name+"Interface"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.return.type }}"), []byte("*"+packageName+"."+name+", error"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.action }}"), []byte("Update(&in)"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.return }}"), []byte("return in, err"))
 
 					break;
 				case "Delete":
-					itm = bytes.ReplaceAll(itm, []byte("{{variable}}"), []byte("data.(*"+packageName+"."+name+")"))
-
-					itm = bytes.ReplaceAll(itm, []byte("{{verb}}"), []byte(crud))
-					itm = bytes.ReplaceAll(itm, []byte("{{model}}"), []byte(name))
-					itm = bytes.ReplaceAll(itm, []byte("{{param}}"), []byte("data "+packageName+"."+name+"Interface"))
-					itm = bytes.ReplaceAll(itm, []byte("{{type}}"), []byte("error"))
-					itm = bytes.ReplaceAll(itm, []byte("{{action}}"), []byte("Delete(&in)"))
-					itm = bytes.ReplaceAll(itm, []byte("{{return}}"), []byte("return err"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .module.variable }}"), []byte("data.(*"+packageName+"."+name+")"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.verb }}"), []byte(crud))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .module }}"), []byte(name))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .module.extension }}"), []byte(""))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.param }}"), []byte("data "+packageName+"."+name+"Interface"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.return.type }}"), []byte("error"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.action }}"), []byte("Delete(&in)"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.return }}"), []byte("return err"))
 
 					break;
 				}
@@ -180,11 +186,13 @@ func (r *RepositoryBuilder) General() (_interface []byte, _implement []byte, _te
 				itm := repository.INTERFACE_TEST
 				//取代方法的 module 名稱
 				if crud == "GetList" {
-					itm = bytes.ReplaceAll(itm, []byte("{{verb}}"), []byte("Get"))
-					itm = bytes.ReplaceAll(itm, []byte("{{model}}"), []byte(name+"List"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.verb }}"), []byte("Get"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .module }}"), []byte(name))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .module.extension }}"), []byte("List"))
 				} else {
-					itm = bytes.ReplaceAll(itm, []byte("{{verb}}"), []byte(crud))
-					itm = bytes.ReplaceAll(itm, []byte("{{model}}"), []byte(name))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.verb }}"), []byte(crud))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .module }}"), []byte(name))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .module.extension }}"), []byte(""))
 				}
 
 				itm = append(itm, repository.SUBSTITUTION...)

@@ -46,7 +46,7 @@ func (m *ModelBuilder) General() {
 	mt := model.SUBSTITUTION
 	for st := range m._parser.GetStruct() {
 		typeT := model.INTERFACE_TYPE
-		typeT = bytes.ReplaceAll(typeT, []byte("{{name}}"), []byte(st.GetName().Name))
+		typeT = bytes.ReplaceAll(typeT, []byte("{{ .module }}"), []byte(st.GetName().Name))
 		amt := model.SUBSTITUTION
 		for f := range st.GetFields(m._parser.GetRawData()) {
 			var (
@@ -62,23 +62,23 @@ func (m *ModelBuilder) General() {
 				//abstruct method
 				{
 					tmp := model.INTERFACE_ABSTRUCT_METHOD
-					tmp = bytes.ReplaceAll(tmp, []byte("{{verb}}"), []byte(verb))
-					tmp = bytes.ReplaceAll(tmp, []byte("{{name}}"), []byte(strings.Title(name)))
-					tmp = bytes.ReplaceAll(tmp, []byte("{{param}}"), []byte(``))
-					tmp = bytes.ReplaceAll(tmp, []byte("{{type}}"), []byte(_type))
+					tmp = bytes.ReplaceAll(tmp, []byte("{{ .method.verb }}"), []byte(verb))
+					tmp = bytes.ReplaceAll(tmp, []byte("{{ .module }}"), []byte(strings.Title(name)))
+					tmp = bytes.ReplaceAll(tmp, []byte("{{ .method.param }}"), []byte(``))
+					tmp = bytes.ReplaceAll(tmp, []byte("{{ .method.return.type }}"), []byte(_type))
 					amt = append(amt, tmp...)
 					amt = append(amt, model.SUBSTITUTION...)
 				}
 				//implement method
 				{
 					tmp := model.INTERFACE_METHOD
-					tmp = bytes.ReplaceAll(tmp, []byte("{{struct}}"), []byte(st.GetName().Name))
-					tmp = bytes.ReplaceAll(tmp, []byte("{{verb}}"), []byte(verb))
-					tmp = bytes.ReplaceAll(tmp, []byte("{{name}}"), []byte(strings.Title(name)))
-					tmp = bytes.ReplaceAll(tmp, []byte("{{param}}"), []byte(``))
-					tmp = bytes.ReplaceAll(tmp, []byte("{{type}}"), []byte(_type))
-					tmp = bytes.ReplaceAll(tmp, []byte("{{action}}"), []byte(``))
-					tmp = bytes.ReplaceAll(tmp, []byte("{{return}}"), []byte("return g."+name))
+					tmp = bytes.ReplaceAll(tmp, []byte("{{ .struct }}"), []byte(st.GetName().Name))
+					tmp = bytes.ReplaceAll(tmp, []byte("{{ .method.verb }}"), []byte(verb))
+					tmp = bytes.ReplaceAll(tmp, []byte("{{ .module }}"), []byte(strings.Title(name)))
+					tmp = bytes.ReplaceAll(tmp, []byte("{{ .method.param }}"), []byte(``))
+					tmp = bytes.ReplaceAll(tmp, []byte("{{ .method.return.type }}"), []byte(_type))
+					tmp = bytes.ReplaceAll(tmp, []byte("{{ .method.action }}"), []byte(``))
+					tmp = bytes.ReplaceAll(tmp, []byte("{{ .method.return }}"), []byte("return g."+name))
 					mt = append(mt, tmp...)
 					mt = append(mt, model.SUBSTITUTION...)
 				}
@@ -88,23 +88,23 @@ func (m *ModelBuilder) General() {
 				//abstruct method
 				{
 					tmp := model.INTERFACE_ABSTRUCT_METHOD
-					tmp = bytes.ReplaceAll(tmp, []byte("{{verb}}"), []byte("Set"))
-					tmp = bytes.ReplaceAll(tmp, []byte("{{name}}"), []byte(strings.Title(name)))
-					tmp = bytes.ReplaceAll(tmp, []byte("{{param}}"), []byte("in "+f.GetType()))
-					tmp = bytes.ReplaceAll(tmp, []byte("{{type}}"), []byte(`*`+st.GetName().Name))
+					tmp = bytes.ReplaceAll(tmp, []byte("{{ .method.verb }}"), []byte("Set"))
+					tmp = bytes.ReplaceAll(tmp, []byte("{{ .module }}"), []byte(strings.Title(name)))
+					tmp = bytes.ReplaceAll(tmp, []byte("{{ .method.param }}"), []byte("in "+f.GetType()))
+					tmp = bytes.ReplaceAll(tmp, []byte("{{ .method.return.type }}"), []byte(`*`+st.GetName().Name))
 					amt = append(amt, tmp...)
 					amt = append(amt, model.SUBSTITUTION...)
 				}
 				//implement method
 				{
 					tmp := model.INTERFACE_METHOD
-					tmp = bytes.ReplaceAll(tmp, []byte("{{struct}}"), []byte(st.GetName().Name))
-					tmp = bytes.ReplaceAll(tmp, []byte("{{verb}}"), []byte("Set"))
-					tmp = bytes.ReplaceAll(tmp, []byte("{{name}}"), []byte(strings.Title(name)))
-					tmp = bytes.ReplaceAll(tmp, []byte("{{param}}"), []byte("in "+f.GetType()))
-					tmp = bytes.ReplaceAll(tmp, []byte("{{type}}"), []byte(`*`+st.GetName().Name))
-					tmp = bytes.ReplaceAll(tmp, []byte("{{action}}"), []byte(`g.`+name+" = in"))
-					tmp = bytes.ReplaceAll(tmp, []byte("{{return}}"), []byte("return g"))
+					tmp = bytes.ReplaceAll(tmp, []byte("{{ .struct }}"), []byte(st.GetName().Name))
+					tmp = bytes.ReplaceAll(tmp, []byte("{{ .method.verb }}"), []byte("Set"))
+					tmp = bytes.ReplaceAll(tmp, []byte("{{ .module }}"), []byte(strings.Title(name)))
+					tmp = bytes.ReplaceAll(tmp, []byte("{{ .method.param }}"), []byte("in "+f.GetType()))
+					tmp = bytes.ReplaceAll(tmp, []byte("{{ .method.return.type }}"), []byte(`*`+st.GetName().Name))
+					tmp = bytes.ReplaceAll(tmp, []byte("{{ .method.action }}"), []byte(`g.`+name+" = in"))
+					tmp = bytes.ReplaceAll(tmp, []byte("{{ .method.return }}"), []byte("return g"))
 					mt = append(mt, tmp...)
 					mt = append(mt, model.SUBSTITUTION...)
 				}
@@ -113,11 +113,11 @@ func (m *ModelBuilder) General() {
 		n_str := model.INTERFACE_NEW
 		//implement method
 		{
-			n_str = bytes.ReplaceAll(n_str, []byte("{{struct}}"), []byte(st.GetName().Name))
+			n_str = bytes.ReplaceAll(n_str, []byte("{{ .struct }}"), []byte(st.GetName().Name))
 			mt = append(n_str, mt...)
 		}
 
-		typeT = bytes.ReplaceAll(typeT, []byte("{{abstruct_method}}"), amt)
+		typeT = bytes.ReplaceAll(typeT, []byte("{{ .interface.method }}"), amt)
 		inter = append(inter, typeT...)
 	}
 	m._rawData = bytes.ReplaceAll(m._parser.GetRawData(), []byte("//exdev_interface_type"), inter)
