@@ -3,17 +3,15 @@ module github.com/codingXiang/gecko
 go 1.13
 
 require (
-	github.com/fsnotify/fsnotify v1.4.9 // indirect
+	github.com/DATA-DOG/go-sqlmock v1.4.1 // indirect
+	github.com/codingXiang/cxgateway v1.0.4 // indirect
+	github.com/golang/protobuf v1.4.0 // indirect
+	github.com/lib/pq v1.4.0 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
-	github.com/mitchellh/mapstructure v1.2.2 // indirect
-	github.com/pelletier/go-toml v1.7.0 // indirect
-	github.com/spf13/afero v1.2.2 // indirect
-	github.com/spf13/cast v1.3.1 // indirect
+	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/spf13/cobra v1.0.0
-	github.com/spf13/jwalterweatherman v1.1.0 // indirect
-	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.6.3
+	github.com/stretchr/objx v0.2.0 // indirect
+	github.com/stretchr/testify v1.5.1 // indirect
 	golang.org/x/sys v0.0.0-20200420163511-1957bb5e6d1f // indirect
-	golang.org/x/text v0.3.2 // indirect
-	gopkg.in/ini.v1 v1.55.0 // indirect
 )
