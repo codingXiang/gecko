@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-echo "build binary file"
-go build
+echo "get gecko"
+go get -u github.com/codingXiang/gecko
 
 model_struct=./example
 model_file=user.go
@@ -12,11 +12,11 @@ module_destination=./output/module
 service_file=service.go
 service_source=./output/module
 
-echo "建立 model"
+echo "Create model"
 ./gecko general model -s $model_struct -f $model_file -d $model_destination
-echo "建立 repository"
+echo "Create repository"
 ./gecko general repo -s $module_source -f $model_file -d $module_destination -p $module_name
-echo "建立 service"
+echo "Create service"
 ./gecko general svc -s $module_source -f $model_file -d $module_destination -p $module_name
-echo "建立 delivery"
+echo "Create delivery"
 ./gecko general delivery http -s $module_destination/$module_name -f $service_file -d $module_destination -p $module_name
