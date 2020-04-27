@@ -33,7 +33,7 @@ func NewHttpTemplate() HttpTemplate {
 	var r = &Http{}
 	r.Interface = INTERFACE
 	r.Implement = http.IMPLEMENT
-	//r.Test = TEST
+	r.Test = http.TEST
 	return r
 }
 

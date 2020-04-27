@@ -61,17 +61,21 @@ func (r *HttpBuilder) SetupFolder() {
 func (r *HttpBuilder) Create() (_interface []byte, _implement []byte, _test []byte) {
 	_interface = r.Info.ReplaceTemplate(r.Template.GetInterface())
 	_implement = r.Info.ReplaceTemplate(r.Template.GetImplement())
-	//_test = r.Info.ReplaceTemplate(r.Template.GetTest())
+	_test = r.Info.ReplaceTemplate(r.Template.GetTest())
 	return
 }
 
 func (r *HttpBuilder) General() (_interface []byte, _implement []byte, _test []byte) {
 	_interface = r.Info.ReplaceTemplate(r.Template.GetInterface())
 	_implement = r.Template.GetImplement()
+	_test = r.Info.ReplaceTemplate(r.Template.GetTest())
+
+	_test = bytes.ReplaceAll(_test, []byte("{{ .default.config }}"), http.TEST_CONFIG)
 
 	_interface_abstract_method := []byte("")
 	_implement_api := []byte("")
 	_implement_method := []byte("")
+	_test_method := []byte("")
 	for it := range r.Source.GetInterface() {
 		for _, m := range it.GetObj().Methods.List {
 			var (
@@ -91,16 +95,21 @@ func (r *HttpBuilder) General() (_interface []byte, _implement []byte, _test []b
 			im = bytes.ReplaceAll(im, []byte("{{ .method }}"), []byte(methodName))
 			im = append(im, repository.SUBSTITUTION...)
 
+			tm := http.TEST_METHOD
+			tm = bytes.ReplaceAll(tm, []byte("{{ .method }}"), []byte(methodName))
+			tm = append(tm, repository.SUBSTITUTION...)
+
 			_interface_abstract_method = append(_interface_abstract_method, itm...)
 			_implement_api = append(_implement_api, api...)
 			_implement_method = append(_implement_method, im...)
-
+			_test_method = append(_test_method, tm...)
 		}
 	}
 	_interface = bytes.ReplaceAll(_interface, []byte("//HttpImplement"), _interface_abstract_method)
 	_implement = bytes.ReplaceAll(_implement, []byte("{{ .api.method }}"), _implement_api)
 	_implement = bytes.ReplaceAll(_implement, []byte("{{ .implement }}"), _implement_method)
 	_implement = r.Info.ReplaceTemplate(_implement)
+	_test = bytes.ReplaceAll(_test, []byte("{{ .implement }}"), _test_method)
 	//_interface = r.Info.ReplaceImplement(_interface, _interface_abstract_method)
 	//_implement = r.Info.ReplaceImplement(_implement, _interface_method)
 
@@ -112,7 +121,7 @@ func (r *HttpBuilder) Save(_interface []byte, _implement []byte, _test []byte) {
 		interfacePath = r.GetDestination() + "/" + delivery.DELIVERY + "/"
 		implementPath = interfacePath + HTTP + "/"
 		fileName      = HTTP + ".go"
-		//testFileName  = HTTP + "_test.go"
+		testFileName  = HTTP + "_test.go"
 	)
 
 	if err := ioutil.WriteFile(interfacePath+"handler.go", _interface, 0777); err == nil {
@@ -125,9 +134,9 @@ func (r *HttpBuilder) Save(_interface []byte, _implement []byte, _test []byte) {
 	} else {
 		log.Fatalln(err)
 	}
-	//if err := ioutil.WriteFile(implementPath+testFileName, _test, 0777); err == nil {
-	//	log.Println("Save " + SERVICE + " Test success")
-	//} else {
-	//	log.Fatalln(err)
-	//}
+	if err := ioutil.WriteFile(implementPath+testFileName, _test, 0777); err == nil {
+		log.Println("Save " + HTTP + " Test success")
+	} else {
+		log.Fatalln(err)
+	}
 }
