@@ -132,10 +132,10 @@ func (r *ServiceBuilder) General() (_interface []byte, _implement []byte, _test 
 				//取代方法的 module 名稱
 				if crud == "GetList" {
 					itm = bytes.ReplaceAll(itm, []byte("{{ .method.verb }}"), []byte("Get"))
-					itm = bytes.ReplaceAll(itm, []byte("{{ .module.extension }}"), []byte("List"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.extension }}"), []byte("List"))
 				} else {
 					itm = bytes.ReplaceAll(itm, []byte("{{ .method.verb }}"), []byte(crud))
-					itm = bytes.ReplaceAll(itm, []byte("{{ .module.extension }}"), []byte(""))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.extension }}"), []byte(""))
 				}
 
 				itm = append(itm, repository.SUBSTITUTION...)
