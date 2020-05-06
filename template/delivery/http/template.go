@@ -24,7 +24,7 @@ type {{ .module }}HttpHandler struct {
 func New{{ .module }}HttpHandler(gateway cx.HttpHandler, svc {{ .package }}.Service) delivery.HttpHandler {
 	var handler = &{{ .module }}HttpHandler{
 		gateway: gateway,
-		svc:     {{ .package }}.Service,
+		svc:     svc,
 	}
 	/*
 		v1 版本的 {{ .module }} API
