@@ -39,7 +39,7 @@ type {{ .module }}Service struct {
 }
 
 //建立
-func New{{ .module }}Service({{ .module }}Repo {{ .package }}.Repository) {{ .package }}.Service {
+func New{{ .module }}Service({{ .package }}Repo {{ .package }}.Repository) {{ .package }}.Service {
 	return &{{ .module }}Service{
 		{{ .package }}Repo: {{ .package }}Repo,
 	}

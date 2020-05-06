@@ -21,7 +21,7 @@ var (
 		Short:   "module 指令",
 		Long:    `module 指令`,
 		Run: func(cmd *cobra.Command, args []string) {
-			if pkg == "" || filename == "" || destination == "" || source == ""{
+			if pkg == "" || filename == "" || destination == "" || source == "" {
 				cmd.Help()
 				return
 			}
@@ -30,10 +30,9 @@ var (
 			svc := builder2.NewServiceBuilder(source, filename, destination, pkg)
 			svc.Save(svc.General())
 			delivery := builder3.NewHttpBuilder(destination+"/"+pkg, "service.go", destination, pkg)
-			delivery.Save(svc.General())
+			delivery.Save(delivery.General())
 		},
 	}
-
 )
 
 func init() {
