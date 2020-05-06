@@ -119,7 +119,7 @@ func (r *RepositoryBuilder) General() (_interface []byte, _implement []byte, _te
 					itm = bytes.ReplaceAll(itm, []byte("{{ .module.extension }}"), []byte("List"))
 					itm = bytes.ReplaceAll(itm, []byte("{{ .method.param }}"), []byte("data map[string]interface{}"))
 					itm = bytes.ReplaceAll(itm, []byte("{{ .method.return.type }}"), []byte("[]*"+packageName+"."+name+", error"))
-					itm = bytes.ReplaceAll(itm, []byte("{{ .method.action }}"), []byte("Find(&result, data)"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.action }}"), []byte("Find(&in, data)"))
 					itm = bytes.ReplaceAll(itm, []byte("{{ .method.return }}"), []byte("return in, err"))
 
 					break;
