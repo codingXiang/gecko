@@ -29,22 +29,22 @@ var (
 	HttpRoot = &cobra.Command{
 		Use:     "http",
 		Aliases: []string{"api"},
-		Short: "Http/API 指令",
-		Long: "Http/API 指令",
+		Short:   "Http/API 指令",
+		Long:    "Http/API 指令",
 		Run: func(cmd *cobra.Command, args []string) {
 			if pkg == "" || filename == "" || destination == "" {
 				cmd.Help()
 				return
 			}
-			repo := builder2.NewHttpBuilder(source, filename, destination, pkg)
+			repo := builder2.NewHttpBuilder(source+"/"+pkg, filename, destination, pkg)
 			repo.Save(repo.General())
 			//repo.Save(repo.Create())
 		},
 	}
 	gRPCRoot = &cobra.Command{
-		Use:     "grpc",
+		Use:   "grpc",
 		Short: "gRPC 指令",
-		Long: "gRPC 指令",
+		Long:  "gRPC 指令",
 		Run: func(cmd *cobra.Command, args []string) {
 			if pkg == "" || filename == "" || destination == "" {
 				cmd.Help()
@@ -53,9 +53,9 @@ var (
 		},
 	}
 	CliRoot = &cobra.Command{
-		Use:     "cli",
+		Use:   "cli",
 		Short: "Cli 指令",
-		Long: "Cli 指令",
+		Long:  "Cli 指令",
 		Run: func(cmd *cobra.Command, args []string) {
 			if pkg == "" || filename == "" || destination == "" {
 				cmd.Help()
@@ -67,8 +67,8 @@ var (
 
 func init() {
 	Root.PersistentFlags().StringVarP(&pkg, "package", "p", "", "Delivery 的 Package 名稱")
-	Root.PersistentFlags().StringVarP(&filename, "filename", "f", "", "Delivery 的檔案名稱")
-	Root.PersistentFlags().StringVarP(&source, "source", "s", "./module", "讀取 Service 的檔案路徑 (必須與 delivery 相同 package)")
+	Root.PersistentFlags().StringVarP(&filename, "filename", "f", "service.go", "Service 的檔案名稱")
+	Root.PersistentFlags().StringVarP(&source, "source", "s", "./module", "讀取 Service 的檔案路徑")
 	Root.PersistentFlags().StringVarP(&destination, "destination", "d", "./module", "建立 Delivery 的路徑")
 	Root.AddCommand(HttpRoot, gRPCRoot, CliRoot)
 }
