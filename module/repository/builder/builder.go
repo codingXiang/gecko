@@ -95,7 +95,7 @@ func (r *RepositoryBuilder) General() (_interface []byte, _implement []byte, _te
 				if crud == "Delete" {
 					itm = bytes.ReplaceAll(itm, []byte("{{ .method.return.type }}"), []byte("error"))
 				} else {
-					itm = bytes.ReplaceAll(itm, []byte("{{ .method.return.type }}"), []byte(packageName+"."+name+" ,error"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.return.type }}"), []byte("*"+packageName+"."+name+" ,error"))
 				}
 				itm = append(itm, repository.SUBSTITUTION...)
 				_interface_abstract_method = append(_interface_abstract_method, itm...)

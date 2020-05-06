@@ -129,7 +129,7 @@ func (g *{{ .module }}Repository) {{ .method.verb }}{{ .module }}{{ .module.exte
 		in  = {{ .module.variable }}
 	)`)
 	INTERFACE_METHOD_ACTION = []byte(`err = g.orm.{{ .method.action }}.Error`)
-	CRUD = []string{"Get", "GetList", "Create", "Update", "Modify", "Delete"}
+	CRUD = []string{"GetList", "Get", "Create", "Update", "Modify", "Delete"}
 
 	INTERFACE_TEST = []byte(`//Test{{ .method.verb }}{{ .module }}{{ .module.extension }} 用於測試 Repository 中的 {{ .method.verb }}{{ .module }}{{ .module.extension }}
 func (s *Suite) Test{{ .method.verb }}{{ .module }}{{ .module.extension }}() {
