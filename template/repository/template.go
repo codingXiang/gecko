@@ -117,7 +117,7 @@ func TestStart(t *testing.T) {
 )
 
 var (
-	INTERFACE_ABSTRACT_METHOD = []byte(`    {{ .method.verb }}{{ .module }}({{ .method.param }}) ({{ .method.return.type }})`)
+	INTERFACE_ABSTRACT_METHOD = []byte(`    {{ .method.verb }}{{ .module }}{{ .module.extension }}({{ .method.param }}) ({{ .method.return.type }})`)
 	INTERFACE_METHOD          = []byte(`//此為自動產生，建議不要進行更動
 func (g *{{ .module }}Repository) {{ .method.verb }}{{ .module }}{{ .module.extension }}({{ .method.param }}) ({{ .method.return.type }}) {
 	{{ .module.variable }}

@@ -83,6 +83,9 @@ func (r *RepositoryBuilder) General() (_interface []byte, _implement []byte, _te
 				if crud == "GetList" {
 					itm = bytes.ReplaceAll(itm, []byte("{{ .method.verb }}"), []byte("Get"))
 					itm = bytes.ReplaceAll(itm, []byte("{{ .module.extension }}"), []byte("List"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.param }}"), []byte("data map[string]interface{}"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.return.type }}"), []byte("[]*"+packageName+"."+name+" ,error"))
+
 				} else {
 					itm = bytes.ReplaceAll(itm, []byte("{{ .method.verb }}"), []byte(crud))
 					itm = bytes.ReplaceAll(itm, []byte("{{ .module.extension }}"), []byte(""))
