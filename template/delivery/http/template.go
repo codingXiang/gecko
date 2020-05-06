@@ -29,7 +29,7 @@ func New{{ .module }}HttpHandler(gateway cx.HttpHandler, svc {{ .package }}.Serv
 	/*
 		v1 版本的 {{ .module }} API
 	  */
-	v1 := gateway.GetApiRoute().Group("/v1/{{ .package }}")
+	v1 := gateway.GetApiRoute().Group("/v1")
 {{ .api.method }}
 	return handler
 }
