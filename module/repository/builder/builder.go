@@ -164,7 +164,7 @@ func (r *RepositoryBuilder) General() (_interface []byte, _implement []byte, _te
 					itm = bytes.ReplaceAll(itm, []byte("{{ .module.extension }}"), []byte(""))
 					itm = bytes.ReplaceAll(itm, []byte("{{ .method.param }}"), []byte("data "+packageName+"."+name+"Interface"))
 					itm = bytes.ReplaceAll(itm, []byte("{{ .method.return.type }}"), []byte("*"+packageName+"."+name+", error"))
-					itm = bytes.ReplaceAll(itm, []byte("{{ .method.action }}"), []byte("Update(&in)"))
+					itm = bytes.ReplaceAll(itm, []byte("{{ .method.action }}"), []byte("Save(&in)"))
 					itm = bytes.ReplaceAll(itm, []byte("{{ .method.return }}"), []byte("return in, err"))
 
 					break;
