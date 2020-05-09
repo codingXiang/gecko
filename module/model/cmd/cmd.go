@@ -15,7 +15,11 @@ var (
 	Root = &cobra.Command{
 		Use:   "model",
 		Short: "建立 model interface 與方法",
-		Long:  `透過解析 Struct 進而自動產出 interface 與 method`,
+		Long:  `透過解析 Struct 進而自動產出 interface 與 method
+請在檔案裡面寫入以下兩個 tag，gecko 會於 tag 的地方產生 interface 與 method
+- interface : //exdev_interface_type
+- method : //exdev_interface_method
+`,
 		Run: func(cmd *cobra.Command, args []string) {
 			if source == "" || destination == "" || filename == "" {
 				cmd.Help()
